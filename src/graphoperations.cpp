@@ -16,79 +16,63 @@ void GraphOperations::printGraph(const Graph& graph) {
 
 
 vector<int> GraphOperations::findHamiltonianCycle(const Graph& graph) {
-    vector<int> path; // Ścieżka cyklu Hamiltona
-    vector<bool> visited(graph.size(), false); // Tablica odwiedzonych wierzchołków
+    vector<int> path;
+    vector<bool> visited(graph.size(), false);
     
-    function<bool(int, int)> dfs = [&](int v, int depth) {
-        // Sprawdzamy, czy odwiedziliśmy wszystkie wierzchołki
-        if (depth == graph.size()) {
-            // Jeśli tak, sprawdzamy, czy możemy wrócić do wierzchołka początkowego, tworząc cykl Hamiltona
-            return find(graph[v].begin(), graph[v].end(), path[0]) != graph[v].end();
-        }
-        
-        // Oznaczamy aktualny wierzchołek jako odwiedzony i dodajemy go do ścieżki
-        visited[v] = true;
-        path.push_back(v);
-        
-        // Przechodzimy przez sąsiadów aktualnego wierzchołka
-        for (int neighbor : graph[v]) {
-            // Jeśli sąsiad nie został odwiedzony, rekurencyjnie odwiedzamy go
-            if (!visited[neighbor] && dfs(neighbor, depth + 1)) {
-                return true; // Jeśli udało się znaleźć cykl Hamiltona, zwracamy prawdę
+function<bool(int, int)> dfs = [&](int v, int depth) {
+    visited[v] = true;
+    path.push_back(v);
+    if (depth == graph.size()) {
+        // Sprawdź, czy ostatni wierzchołek w cyklu jest sąsiadem początkowego wierzchołka
+        for (int neighbor : graph[path.back()]) {
+            if (neighbor == path[0]) {
+                return true;
             }
         }
-        
-        // Jeśli nie udało się znaleźć cyklu Hamiltona, oznaczamy aktualny wierzchołek jako nieodwiedzony i usuwamy go ze ścieżki
-        visited[v] = false;
-        path.pop_back();
-        
-        return false; // Zwracamy fałsz, ponieważ cykl Hamiltona nie został znaleziony dla tego wierzchołka
-    };
-    
-    // Rozpoczynamy przeszukiwanie DFS od pierwszego wierzchołka
-    if (dfs(0, 1)) {
-        path.push_back(path[0]); // Jeśli znaleziono cykl Hamiltona, dodajemy wierzchołek początkowy na koniec ścieżki, aby zamknąć cykl
-    } else {
-        path.clear(); // W przeciwnym razie, czyszczymy ścieżkę
+        return false;
     }
-    
-    return path; // Zwracamy ścieżkę (cykl Hamiltona) lub pustą listę, jeśli nie udało się znaleźć cyklu
+    for (int neighbor : graph[v]) {
+        if (!visited[neighbor] && dfs(neighbor, depth + 1)) {
+            return true;
+        }
+    }
+    visited[v] = false;
+    path.pop_back();
+    return false;
+    };
+
+    for (int i = 0; i < graph.size(); ++i) {
+        path.clear(); // Wyczyść ścieżkę przed każdym nowym przeszukiwaniem
+        if (dfs(i, 1)) {
+            path.push_back(i);
+            return path;
+        }
+    }
+
+    return path; // Zwróć pustą ścieżkę, jeśli nie znaleziono cyklu Hamiltona
 }
 
 
+
+void GraphOperations::dfsEuler(int v, Graph& graph, vector<int>& cycle) {
+    while (!graph[v].empty()) {
+        int neighbor = graph[v].back();
+        graph[v].pop_back();
+        for (int i = 0; i < graph[neighbor].size(); ++i) {
+            if (graph[neighbor][i] == v) {
+                graph[neighbor].erase(graph[neighbor].begin() + i);
+                break;
+            }
+        }
+        dfsEuler(neighbor, graph, cycle);
+    }
+    cycle.push_back(v);
+}
+
 vector<int> GraphOperations::findEulerianCycle(const Graph& graph) {
-    // Funkcja pomocnicza DFS do znajdowania cyklu Eulera
     vector<int> cycle;
-  Graph graphCopy = graph;
-    function<void(int)> dfs = [&](int v) {
-        while (!graphCopy[v].empty()) {
-            int u = graphCopy[v].back(); // Weź ostatniego sąsiada wierzchołka v
-            graphCopy[v].pop_back(); // Usuń krawędź v-u
-            dfs(u); // Rekurencyjnie odwiedź wierzchołek u
-        }
-        cycle.push_back(v); // Dodaj wierzchołek do cyklu Eulera
-    };
-
-
-    // Znajdź wierzchołek startowy, który ma niezerowy stopień
-    int startVertex = -1;
-    for (int i = 0; i < graphCopy.size(); ++i) {
-        if (!graphCopy[i].empty()) {
-            startVertex = i;
-            break;
-        }
-    }
-
-    // Jeśli nie znaleziono wierzchołka o niezerowym stopniu, zwróć pusty cykl Eulera
-    if (startVertex == -1) {
-        return cycle;
-    }
-
-    // Rozpocznij przeszukiwanie DFS od wierzchołka startowego
-    dfs(startVertex);
-
-    // Odwróć cykl, aby uzyskać poprawną kolejność wierzchołków
-    reverse(cycle.begin(), cycle.end());
-
+    Graph copy = graph; // Skopiuj graf, aby uniknąć zmiany oryginalnego grafu
+    dfsEuler(0, copy, cycle); // Rozpocznij przeszukiwanie od wierzchołka 0
+    reverse(cycle.begin(), cycle.end()); // Odwróć kolejność wierzchołków, aby uzyskać cykl Eulera
     return cycle;
 }
