@@ -2,22 +2,23 @@
 #include <cstdlib>
 #include "GraphGenerator.h"
 #include "GraphOperations.h"
-#include "Benchmark.h"
+
+using namespace std;
 
 void printUsage() {
-    std::cout << "Usage:\n"
+    cout << "Usage:\n"
               << "./program --hamilton\n"
               << "./program --non-hamilton\n";
 }
 
-void printCycle(const std::vector<int>& cycle) {
+void printCycle(const vector<int>& cycle) {
     if (cycle.empty()) {
-        std::cout << "No cycle found." << std::endl;
+        cout << "No cycle found." << endl;
     } else {
         for (int v : cycle) {
-            std::cout << v << " ";
+            cout << v << " ";
         }
-        std::cout << std::endl;
+        cout << endl;
     }
 }
 
@@ -27,35 +28,35 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::string mode = argv[1];
+    string mode = argv[1];
     int nodes;
     double saturation;
 
     if (mode == "--hamilton") {
-        std::cout << "nodes> ";
-        std::cin >> nodes;
-        std::cout << "saturation> ";
-        std::cin >> saturation;
+        cout << "nodes> ";
+        cin >> nodes;
+        cout << "saturation> ";
+        cin >> saturation;
         
         auto graph = GraphGenerator::generateHamiltonianGraph(nodes, saturation);
         GraphOperations::printGraph(graph);
         auto hamiltonianCycle = GraphOperations::findHamiltonianCycle(graph);
-        std::cout << "Hamiltonian Cycle: ";
+        cout << "Hamiltonian Cycle: ";
         printCycle(hamiltonianCycle);
         auto eulerianCycle = GraphOperations::findEulerianCycle(graph);
-        std::cout << "Eulerian Cycle: ";
+        cout << "Eulerian Cycle: ";
         printCycle(eulerianCycle);
     } else if (mode == "--non-hamilton") {
-        std::cout << "nodes> ";
-        std::cin >> nodes;
+        cout << "nodes> ";
+        cin >> nodes;
 
         auto graph = GraphGenerator::generateNonHamiltonianGraph(nodes);
         GraphOperations::printGraph(graph);
         auto hamiltonianCycle = GraphOperations::findHamiltonianCycle(graph);
-                std::cout << "Hamiltonian Cycle: ";
+                cout << "Hamiltonian Cycle: ";
         printCycle(hamiltonianCycle);
         auto eulerianCycle = GraphOperations::findEulerianCycle(graph);
-        std::cout << "Eulerian Cycle: ";
+        cout << "Eulerian Cycle: ";
         printCycle(eulerianCycle);
     } else {
         printUsage();
