@@ -69,7 +69,28 @@ void GraphOperations::dfsEuler(int v, Graph& graph, vector<int>& cycle) {
     cycle.push_back(v);
 }
 
+bool GraphOperations::allVerticesEvenDegree(const Graph& graph) {
+    unordered_map<int, int> degreeCount; // Mapa stopni wierzchołków
+    for (const auto& edgeList : graph) {
+        for (int vertex : edgeList) {
+            degreeCount[vertex]++;
+        }
+    }
+    
+    for (const auto& pair : degreeCount) {
+        if (pair.second % 2 != 0) {
+            return false; // Zwróć false, jeśli stopień wierzchołka jest nieparzysty
+        }
+    }
+    
+    return true;
+}
+
 vector<int> GraphOperations::findEulerianCycle(const Graph& graph) {
+    if (!allVerticesEvenDegree(graph)) {
+        return {}; // Zwróć pusty cykl, jeśli graf nie ma wszystkich wierzchołków o parzystych stopniach
+    }
+    
     vector<int> cycle;
     Graph copy = graph; // Skopiuj graf, aby uniknąć zmiany oryginalnego grafu
     dfsEuler(0, copy, cycle); // Rozpocznij przeszukiwanie od wierzchołka 0
