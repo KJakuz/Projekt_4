@@ -20,6 +20,11 @@ Graph GraphGenerator::generateHamiltonianGraph(int nodes, double saturation) {
     }
     // Add more edges based on saturation
     int edgesToAdd = (saturation * nodes * (nodes - 1) / 200) - nodes;
+
+    if (edgesToAdd % 2 != 0) {
+        edgesToAdd++;
+    }   
+    
     mt19937 gen{random_device{}()};
     while (edgesToAdd > 0) {
         int u = gen() % nodes;
