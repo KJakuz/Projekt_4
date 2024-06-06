@@ -23,7 +23,7 @@ function<bool(int, int)> dfs = [&](int v, int depth) {
     visited[v] = true;
     path.push_back(v);
     if (depth == graph.size()) {
-        // Sprawdź, czy ostatni wierzchołek w cyklu jest sąsiadem początkowego wierzchołka
+        //czy ostatni w cyklu jest sąsiadem początkowego
         for (int neighbor : graph[path.back()]) {
             if (neighbor == path[0]) {
                 return true;
@@ -49,7 +49,7 @@ function<bool(int, int)> dfs = [&](int v, int depth) {
         }
     }
 
-    return path; // Zwróć pustą ścieżkę, jeśli nie znaleziono cyklu Hamiltona
+    return path;
 }
 
 
@@ -88,12 +88,12 @@ bool GraphOperations::allVerticesEvenDegree(const Graph& graph) {
 
 vector<int> GraphOperations::findEulerianCycle(const Graph& graph) {
     if (!allVerticesEvenDegree(graph)) {
-        return {}; // Zwróć pusty cykl, jeśli graf nie ma wszystkich wierzchołków o parzystych stopniach
+        return {}; 
     }
     
     vector<int> cycle;
-    Graph copy = graph; // Skopiuj graf, aby uniknąć zmiany oryginalnego grafu
-    dfsEuler(0, copy, cycle); // Rozpocznij przeszukiwanie od wierzchołka 0
+    Graph copy = graph;
+    dfsEuler(0, copy, cycle);
     reverse(cycle.begin(), cycle.end()); // Odwróć kolejność wierzchołków, aby uzyskać cykl Eulera
     return cycle;
 }

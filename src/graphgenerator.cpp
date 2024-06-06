@@ -20,7 +20,6 @@ Graph GraphGenerator::generateHamiltonianGraph(int nodes, double saturation) {
     }
     // Add more edges based on saturation
     int edgesToAdd = (saturation * nodes * (nodes - 1) / 200) - nodes;
-
     if (edgesToAdd % 2 != 0) {
         edgesToAdd++;
     }   
@@ -32,7 +31,7 @@ Graph GraphGenerator::generateHamiltonianGraph(int nodes, double saturation) {
         if (u != v && find(graph[u].begin(), graph[u].end(), v) == graph[u].end()) {
             graph[u].push_back(v);
             graph[v].push_back(u);
-            --edgesToAdd;
+            edgesToAdd -= 2;  // Each edge added reduces the number by 2
         }
     }
 
@@ -51,16 +50,17 @@ Graph GraphGenerator::generateNonHamiltonianGraph(int nodes) {
 }
 
 void GraphGenerator::ensureEvenDegree(Graph &graph) {
-  for (int i = 0; i < graph.size(); ++i) {
-    if (graph[i].size() % 2 != 0) {
-      // Find any unconnected node (not limited to existing neighbors)
-      for (int j = 0; j < graph.size(); ++j) {
-        if (i != j && find(graph[i].begin(), graph[i].end(), j) == graph[i].end()) {
-          graph[i].push_back(j);
-          graph[j].push_back(i);
-          break;
+    vector<int> oddDegreeNodes;
+    for (int i = 0; i < graph.size(); ++i) {
+        if (graph[i].size() % 2 != 0) {
+            oddDegreeNodes.push_back(i);
         }
-      }
     }
-  }
+    // Pair up odd degree nodes
+    for (int i = 0; i < oddDegreeNodes.size(); i += 2) {
+        int u = oddDegreeNodes[i];
+        int v = oddDegreeNodes[i + 1];
+        graph[u].push_back(v);
+        graph[v].push_back(u);
+    }
 }

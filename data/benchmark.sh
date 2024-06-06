@@ -20,7 +20,7 @@ $normal============================[Program Output]===================$teal
 EOF
             printf "$(more $tmpLogFile)" #printf allows for pretty colors
             tmpFile=$(mktemp) #saving to tmp file so it can be logged in follow up log
-            run_project="../../program.exe --hamilton"
+            run_project="../src/program.exe --hamilton"
             #Please note that <(echo $instance_size) is unnecesarry for routines kahn_sort and tarjan_sort, but the program should ignore invalid `actions`.
             result=$(/usr/bin/time -f "%e|%M" $run_project < <(cat $benchmark $routine <(echo exit)) 2>&1 >$tmpFile)
             mem=${result##*|}
